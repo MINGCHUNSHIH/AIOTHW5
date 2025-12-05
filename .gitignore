@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+models/
+.streamlit/
+.DS_Store
+*.joblib
+__MACOSX/
+*.log
+data/*.csv
