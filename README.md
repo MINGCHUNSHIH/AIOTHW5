@@ -77,17 +77,7 @@ https://github.com/MINGCHUNSHIH/AIOTHW5/releases/download/v1.0/ai_detector.jobli
 
 本 README 中的範例指令都已在本地測試過（包含訓練與啟動流程）。
 
-截圖示例（佔位）
-![screenshot](screenshot-placeholder.svg)
 
-如果你要我把真實截圖放入 repo，我可以：
-- 指導你如何截圖並上傳（最簡單）；或
-- 使用自動化截圖工具（Playwright / Chromium）替你抓圖並提交（需你允許我安裝該工具）。
-
-需要我幫你把 `screenshot.png` 推上 GitHub 嗎？若要我代為執行，請先在本機把截圖放到 `ai-human-detector-clean/screenshot.png`，我會幫你 commit & push。
-
-
----
 
 模型上傳與 Streamlit Cloud 的建議處理
 
@@ -116,4 +106,5 @@ streamlit run streamlit_app.py
 ```
 
 備註：`streamlit_app.py` 已支援從 `st.secrets['MODEL_URL']` 或環境變數 `MODEL_URL` 下載模型，若找不到模型會顯示下載選項。
+
 
