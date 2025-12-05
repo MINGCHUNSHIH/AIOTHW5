@@ -49,7 +49,7 @@ def main():
             "clf",
             LogisticRegression(
                 max_iter=500,
-                n_jobs=-1
+                n_jobs=1
             )
         )
     ])

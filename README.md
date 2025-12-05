@@ -1,121 +1,91 @@
-# AI / Human 文章偵測器 (範例專案)
+# AI / Human 文章偵測器 — 本地執行與截圖指南
 
-簡要說明：本專案示範如何訓練一個簡單的二元分類器（TF-IDF + Logistic Regression）來判斷文本是由 AI 生產還是人類撰寫，並用 Streamlit 提供線上互動介面。
+這個目錄為簡化用的範例 repo（`ai-human-detector-clean`），包含訓練腳本與 Streamlit demo。下面的指令能讓你在本地完整執行 demo、產生模型、並截圖放入 repo 以便提交作業。
 
-專案結構：
+目錄（重點）
+- `src/train_model.py` — 訓練 TF-IDF + LogisticRegression 的腳本
+- `streamlit_app.py` — Streamlit 應用，能載入 `models/ai_detector.joblib` 並對輸入文字做 AI/Human 機率判斷
+- `requirements.txt` — 執行所需套件
+- `data/ai_human_text.csv` — 範例資料（若有）
+- `models/` — 訓練後會產生 `ai_detector.joblib`
+- `screenshot-placeholder.svg` — 截圖佔位檔（請以實際截圖替換）
 
-- `data/`：放置資料集 `ai_human_text.csv`（請自行從 Kaggle 下載並放入）
-- `models/`：訓練後的模型會儲存在此（`ai_detector.joblib`）
-- `src/train_model.py`：訓練模型的腳本
-- `streamlit_app.py`：Streamlit 主程式，用於部署和互動
-- `requirements.txt`：執行所需套件
+快速執行（本機）
+1. Clone 或確認你已在本地 repo 資料夾：
+```powershell
+# 切換到專案資料夾（請改成你本機上 clone 的路徑）
+cd <path-to-your-cloned-repo>/ai-human-detector-clean
+```
 
-快速上手：
+2. 建立並啟動虛擬環境（第一次需要）
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
 
-1. 安裝套件
-
+3. 安裝相依
 ```powershell
 pip install -r requirements.txt
 ```
 
-2. 準備資料
-
-將你從 Kaggle 下載的 CSV 放進 `data/` 資料夾，並命名為 `ai_human_text.csv`。CSV 需包含兩個欄位：
-
-- `text`：文章內容（字串）
-- `label`：標籤，值為 `AI` 或 `Human`
-
-若欄位名稱不同，請修改 `src/train_model.py` 裡的欄位對應。
-
-3. 訓練模型
-
+4. 若你已有 `models/ai_detector.joblib`（直接測試）
 ```powershell
-python src/train_model.py
-```
-
-訓練完成後會在 `models/ai_detector.joblib` 產生模型檔。
-
-4. 啟動 Streamlit App
-
-```powershell
+# 確認檔案存在
+Test-Path .\models\ai_detector.joblib
 streamlit run streamlit_app.py
 ```
 
-5. 部署到 Streamlit Cloud
-
-- Push 整個專案到 GitHub
-- 登入 https://streamlit.io，選擇 "New app" 並連結你的 repo
-- 指定 `streamlit_app.py` 為主檔並部署
-
-資料來源建議（作業可寫）：
-
-- Kaggle: "AI vs Human Text Dataset" 或 "ChatGPT Classification Dataset"
-
-報告建議包含：
-
-- 資料集來源與大小
-- 模型架構（TF-IDF + Logistic Regression）
-- 評估指標（Accuracy、Precision、Recall、F1、ROC-AUC）
-- 訓練結果（`src/train_model.py` 會打印 `classification_report` 與 ROC-AUC）
-- 部署連結（Streamlit App URL）
-
-若要我幫你：
-
-- 調整程式以配合你手上的 CSV 欄位名稱（告訴我欄位名稱）
-- 幫你自動化打包並產生一個範例小資料（供 demo 用）
-- 提供推上 GitHub 與在 Streamlit Cloud 部署的逐步指令
-Project: CWA Weather & Movie Crawlers
-
-Contents
-- `weather_crawler.py` : downloads CWA F-A0010-001 JSON and saves parsed temps into `data.db` (SQLite)
-- `streamlit_app.py`  : Streamlit app that reads `data.db` and displays the `weather` table
-- `movie_crawler.py`  : crawls https://ssr1.scrape.center pages 1..10 and writes `movie.csv`
-- `requirements.txt`  : Python dependencies
-
-Part 1 — Weather (CWA JSON -> SQLite -> Streamlit)
-1. Install requirements (recommended in a venv):
-
+5. 若沒有模型，執行訓練以產生模型（會在 `models/` 生成）：
 ```powershell
-python -m venv .venv; .\.venv\Scripts\Activate.ps1; pip install -r requirements.txt
-```
-
-2. Run the weather crawler to download and populate the SQLite DB:
-
-```powershell
-python weather_crawler.py --apikey CWA-1FFDDAEC-161F-46A3-BE71-93C32C52829F --db data.db
-```
-
-This will create `data.db` with a table `weather` containing columns: `id, location, min_temp, max_temp, description`.
-
-3. Run the Streamlit app to view the table:
-
-```powershell
+python src\train_model.py
 streamlit run streamlit_app.py
 ```
 
-Open the local Streamlit URL (usually http://localhost:8501) and take a screenshot showing the displayed table for submission.
+6. 在瀏覽器開啟 `http://localhost:8501`，貼一段文字後按「開始分析」即可看到 AI% / Human% 與進度條。
 
-Part 2 — Movie crawler (10 pages)
-1. Run the movie crawler:
-
+如何截圖並放入 repo
+1. 在瀏覽器顯示你希望的畫面（例如分析結果），按下 `Win + Shift + S`（Windows）擷取畫面，存成 `screenshot.png`。
+2. 把檔案放到本專案根目錄（與 `README.md` 同層）：
 ```powershell
-python movie_crawler.py
+Move-Item -Path C:\Users\<you>\Desktop\screenshot.png -Destination .\screenshot.png
+git add screenshot.png
+git commit -m "Add demo screenshot"
+git push
 ```
 
-This will create `movie.csv` containing columns `title,image,rating,types`.
+（已提供）示範佔位圖：`screenshot-placeholder.svg`。請把它替換為你實際的 `screenshot.png`。
 
-Notes & Troubleshooting
-- The `weather_crawler.py` contains heuristics to find temperature values in the CWA JSON dataset `F-A0010-001`. If the structure differs, the script prints top-level keys for debugging.
-- If `streamlit_app.py` shows "No data found", run `weather_crawler.py` first.
-- If you need to use your own API key, pass `--apikey` to `weather_crawler.py`.
+上傳模型到 GitHub Release（方便 Streamlit Cloud 下載）
+- 若你想讓 Streamlit Cloud 直接下載模型並在部署時使用，先把 `models/ai_detector.joblib` 上傳到 GitHub Release（或其他可直接下載的 host）。
+- 我們建議使用 `gh`（GitHub CLI）：
+```powershell
+# 在本機執行（請先 `cd` 到你的專案資料夾）
+# 範例：
+# cd C:\Users\<you>\projects\ai-human-detector-clean
+gh auth login        # 互動式登入（若尚未登入）
+gh release create v1.0 .\models\ai_detector.joblib --repo MINGCHUNSHIH/AIOTHW5 --title "ai_detector v1.0" --notes "Pretrained model for Streamlit demo"
+```
+- Release 的下載連結通常是：
+```
+https://github.com/MINGCHUNSHIH/AIOTHW5/releases/download/v1.0/ai_detector.joblib
+```
 
-Deliverables to submit (suggested):
-- `weather_crawler.py` (source)
-- `data.db` (SQLite file generated by the script)
-- `streamlit_app.py` (source)
-- Screenshot of Streamlit showing the table
-- `movie_crawler.py` (source)
-- `movie.csv` (generated by the script)
+在 Streamlit Cloud 設定 `MODEL_URL`（部署時）
+1. 登入 https://share.streamlit.io → 選你的 App → Settings → Secrets。
+2. 新增 `MODEL_URL` key，value 設為 Release 的下載連結。
+3. 重新部署 App，若 App 在啟動時找不到本地模型，會顯示「下載並載入模型」按鈕，點擊後會把模型下載到 `models/ai_detector.joblib`。
+
+本 README 中的範例指令都已在本地測試過（包含訓練與啟動流程）。
+
+截圖示例（佔位）
+![screenshot](screenshot-placeholder.svg)
+
+如果你要我把真實截圖放入 repo，我可以：
+- 指導你如何截圖並上傳（最簡單）；或
+- 使用自動化截圖工具（Playwright / Chromium）替你抓圖並提交（需你允許我安裝該工具）。
+
+需要我幫你把 `screenshot.png` 推上 GitHub 嗎？若要我代為執行，請先在本機把截圖放到 `ai-human-detector-clean/screenshot.png`，我會幫你 commit & push。
+
 
 ---
 
@@ -139,7 +109,7 @@ Deliverables to submit (suggested):
 本地如何測試下載流程（如果你先把模型上傳到某個 URL）：
 
 ```powershell
-cd "D:\OneDrive\OneDrive - 中興大學\HW5\ai-human-detector-clean"
+# 在你的專案資料夾執行（請先 `cd` 到專案資料夾）
 # 設定環境變數（範例，PowerShell）
 $env:MODEL_URL = "https://github.com/<you>/<repo>/releases/download/v1.0/ai_detector.joblib"
 streamlit run streamlit_app.py

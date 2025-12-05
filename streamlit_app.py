@@ -41,6 +41,15 @@ model = None
 model_path = os.path.join("models", "ai_detector.joblib")
 try:
     model = load_model()
+    # verify the loaded estimator is fitted
+    try:
+        # check_is_fitted will raise sklearn.exceptions.NotFittedError if not fitted
+        from sklearn.utils.validation import check_is_fitted
+        check_is_fitted(model)
+    except Exception as _err:
+        # If model isn't fitted, inform user and discard the model so we don't call predict on it
+        st.error(f"載入的模型尚未訓練完成（NotFitted）或不完整：{_err}")
+        model = None
 except Exception as e:
     st.warning(f"模型載入失敗或不存在：{e}")
 
@@ -86,8 +95,12 @@ if st.button("開始分析"):
         if model is None:
             st.error("模型尚未載入。請先執行 `python src/train_model.py` 並確認 `models/ai_detector.joblib` 存在。")
         else:
-            proba = model.predict_proba([user_text])[0]
-            classes = model.classes_
+            try:
+                proba = model.predict_proba([user_text])[0]
+                classes = model.classes_
+            except Exception as pred_err:
+                st.error(f"模型在預測時發生錯誤：{pred_err}. 請重新訓練或重新載入模型（執行 `python src/train_model.py`）。")
+                st.stop()
 
             # 找出 "AI" 這一類的位置，如果找不到就用 index 0 作為 fallback
             try:
