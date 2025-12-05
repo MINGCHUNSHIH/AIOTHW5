@@ -2,6 +2,24 @@ import streamlit as st
 import joblib
 import numpy as np
 import os
+import requests
+
+
+def download_file(url: str, dest_path: str):
+    """Download a file from `url` to `dest_path` with a simple progress indicator."""
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    resp = requests.get(url, stream=True, timeout=30)
+    resp.raise_for_status()
+    total = int(resp.headers.get("content-length", 0))
+    chunk_size = 8192
+    downloaded = 0
+    with open(dest_path + ".part", "wb") as f:
+        for chunk in resp.iter_content(chunk_size=chunk_size):
+            if not chunk:
+                continue
+            f.write(chunk)
+            downloaded += len(chunk)
+    os.replace(dest_path + ".part", dest_path)
 
 
 @st.cache_resource
@@ -20,10 +38,36 @@ st.write("輸入一段文字，模型會估計它是 **AI 生成** 還是 **人�
 
 # Load model if available
 model = None
+model_path = os.path.join("models", "ai_detector.joblib")
 try:
     model = load_model()
 except Exception as e:
-    st.warning(f"模型載入失敗或不存在：{e}\n請先執行 `python src/train_model.py` 來訓練並產生 `models/ai_detector.joblib`。")
+    st.warning(f"模型載入失敗或不存在：{e}")
+
+    # Provide option to download a pre-trained model from a URL (useful for Streamlit Cloud)
+    st.info("若你沒有本地模型，可從遠端下載模型檔。")
+
+    # Determine model URL: prefer Streamlit secrets, then environment variable, then placeholder
+    MODEL_URL = None
+    try:
+        MODEL_URL = st.secrets.get("MODEL_URL")
+    except Exception:
+        MODEL_URL = None
+    if not MODEL_URL:
+        MODEL_URL = os.environ.get("MODEL_URL")
+
+    if MODEL_URL:
+        st.write("模型下載地址已設定。你可以按下按鈕下載模型並載入。")
+        if st.button("下載並載入模型"):
+            try:
+                with st.spinner("正在下載模型..."):
+                    download_file(MODEL_URL, model_path)
+                st.success("模型下載完成，已儲存至 models/ai_detector.joblib。請重新整理頁面以載入模型。")
+            except Exception as e2:
+                st.error(f"下載模型失敗：{e2}")
+    else:
+        st.write("未設定模型下載地址。請在 Streamlit secrets 或環境變數 `MODEL_URL` 中放入模型檔案的可下載 URL（例如 GitHub Release 連結）。")
+        st.write("或是在本地先執行 `python src/train_model.py` 產生 `models/ai_detector.joblib`。")
 
 
 # User input
